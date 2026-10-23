@@ -1,0 +1,82 @@
+@startuml
+skinparam linetype ortho
+skinparam defaultTextAlignment center
+
+entity "track_students" {
+  * student_id : INT {PK}
+  --
+  first_name : VARCHAR(50)
+  last_name : VARCHAR(50)
+  email : VARCHAR(100) {UK}
+  phone_number : VARCHAR(20)
+  date_of_birth : DATE
+  gender : ENUM
+  home_address : VARCHAR(255)
+  admission_date : DATE
+  cumulative_gpa : DECIMAL(3,2)
+  account_status : ENUM
+}
+
+entity "track_courses" {
+  * course_id : INT {PK}
+  --
+  course_code : VARCHAR(20) {UK}
+  course_name : VARCHAR(100)
+  department_name : VARCHAR(50)
+  credit_hours : INT
+  instructor_name : VARCHAR(100)
+  schedule_time : VARCHAR(50)
+  room_number : VARCHAR(20)
+  max_capacity : INT
+  academic_semester : VARCHAR(20)
+  is_active : BOOLEAN
+}
+
+entity "track_enrollments" {
+  * enrollment_id : INT {PK}
+  --
+  # student_id : INT {FK}
+  # course_id : INT {FK}
+  enrollment_date : DATE
+  enrollment_status : ENUM
+  midterm_grade : DECIMAL(5,2)
+  final_grade : DECIMAL(5,2)
+  attendance_rate : INT
+  financial_clearance : BOOLEAN
+  administrative_remarks : VARCHAR(255)
+  created_at : TIMESTAMP
+}
+
+entity "track_assessments" {
+  * assessment_id : INT {PK}
+  --
+  # enrollment_id : INT {FK}
+  # student_id : INT {FK}
+  # course_id : INT {FK}
+  assessment_type : ENUM
+  assessment_date : DATE
+  achieved_score : DECIMAL(5,2)
+  maximum_score : DECIMAL(5,2)
+  instructor_feedback : VARCHAR(255)
+  graded_by : VARCHAR(100)
+  is_makeup_exam : BOOLEAN
+}
+
+entity "system_users" {
+  * user_id : INT {PK}
+  --
+  # student_id : INT {FK, UK, nullable}
+  username : VARCHAR(50) {UK}
+  password_hash : VARCHAR(255)
+  full_name : VARCHAR(100)
+  created_at : TIMESTAMP
+}
+
+track_students ||--o{ track_enrollments : "1 to N"
+track_courses ||--o{ track_enrollments : "1 to N"
+track_enrollments ||--o{ track_assessments : "1 to N"
+track_students ||--o{ track_assessments : "1 to N"
+track_courses ||--o{ track_assessments : "1 to N"
+track_students ||--o| system_users : "1 to 1/Optional"
+
+@enduml
